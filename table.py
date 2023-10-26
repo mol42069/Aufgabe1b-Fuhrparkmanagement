@@ -16,6 +16,18 @@ class List:
         self.dark_grey = (30, 30, 30)
         self.grey = (90, 90, 90)
         self.light_grey = (150, 150, 150)
+        self.scrolled = 0
+
+    def click(self, pos):
+        if self.car:
+            for vehicle in self.inventory[0]:
+                if vehicle.rect.collidepoint(pos):
+                      return vehicle
+
+        else:
+            for vehicle in self.inventory[1]:
+                if vehicle.rect.collidepoint(pos):
+                      return vehicle
 
 
     def draw(self, root):
@@ -34,9 +46,9 @@ class List:
 
         for x, vehicle in enumerate(inv):
             pos = (0, x * 50)
-            self.surf = vehicle.gen_Surf(self.surf, pos)
+            self.surf = vehicle.gen_surf(self.surf, pos)
 
-        root.blit(self.surf, self.position)
+        root.blit(self.surf, (self.position[0], self.position[1] - self.scrolled))
 
         c_surf = pg.Surface((900, 50))
         c_surf.fill(self.light_grey)
