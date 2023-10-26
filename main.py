@@ -28,6 +28,8 @@ def main():
     inv = [cars, trucks]
     v = None
 
+    new_v_window = False
+
     car_list = table.List(inv)
 
     pg.init()
@@ -55,7 +57,10 @@ def main():
             root = v.build_click(root)
             temp = v
 
-        elif temp is not None:
+        elif new_v_window:
+            root = car_list.new_vehicle(root)
+
+        if temp is not None:
             temp.text = ["", "", ""]
 
 
@@ -82,17 +87,28 @@ def main():
 
         if pg.mouse.get_pressed()[0]:
             pos = pg.mouse.get_pos()
+            temp_pos = (pos[0] - 50, pos[1])
 
-            if car_list.car_rect.collidepoint(pos):
+            if car_list.car_rect.collidepoint(temp_pos):
                 car_list.car = True
 
-            elif car_list.truck_rect.collidepoint(pos):
+            elif car_list.truck_rect.collidepoint(temp_pos):
                 car_list.car = False
 
+            elif car_list.new_rect.collidepoint(temp_pos):
+                new_v_window = True
+
             else:
-                if v is None:
+                if not mouse_press and not car_list.new_win.collidepoint(pos) and new_v_window:
+                    mouse_press = True
+                    new_v_window = False
+
+                elif new_v_window:
+                    mouse_press = True
+
+                elif v is None:
                     if not mouse_press:
-                        pos = (pos[0], pos[1] - 50 + scrolled)
+                        pos = (pos[0] - 50, pos[1] - 50 + scrolled)
                         v = car_list.click(pos)
 
                     mouse_press = True
@@ -100,6 +116,8 @@ def main():
                 elif (not v.s_rect.collidepoint(pos)) and not mouse_press:
                     v = None
                     mouse_press = True
+
+
 
             if v is not None and not mouse_press:
 
