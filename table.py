@@ -1,29 +1,99 @@
 import pygame as pg
+import vehicle
 
 def get_key_pressed():
     keys = pg.key.get_pressed()
-    if keys[pg.K_0]:
-        return '0'
-    elif keys[pg.K_1]:
-        return '1'
-    elif keys[pg.K_2]:
-        return '2'
-    elif keys[pg.K_3]:
-        return '3'
-    elif keys[pg.K_4]:
-        return '4'
-    elif keys[pg.K_5]:
-        return '5'
-    elif keys[pg.K_6]:
-        return '6'
-    elif keys[pg.K_7]:
-        return '7'
-    elif keys[pg.K_8]:
-        return '8'
-    elif keys[pg.K_9]:
-        return '9'
-    elif keys[pg.K_BACKSPACE]:
-        return '-1'
+
+    key = ''
+
+    if keys[pg.K_BACKSPACE]:
+        return False
+
+    if keys[pg.K_0] or keys[pg.K_KP0]:
+        key = '0'
+    elif keys[pg.K_1] or keys[pg.K_KP1]:
+        key = '1'
+    elif keys[pg.K_2] or keys[pg.K_KP2]:
+        key = '2'
+    elif keys[pg.K_3] or keys[pg.K_KP3]:
+        key = '3'
+    elif keys[pg.K_4] or keys[pg.K_KP4]:
+        key = '4'
+    elif keys[pg.K_5] or keys[pg.K_KP5]:
+        key = '5'
+    elif keys[pg.K_6] or keys[pg.K_KP6]:
+        key = '6'
+    elif keys[pg.K_7] or keys[pg.K_KP7]:
+        key = '7'
+    elif keys[pg.K_8] or keys[pg.K_KP8]:
+        key = '8'
+    elif keys[pg.K_9] or keys[pg.K_KP9]:
+        key = '9'
+    elif keys[pg.K_a]:
+        key = 'a'
+    elif keys[pg.K_b]:
+        key = 'b'
+    elif keys[pg.K_c]:
+        key = 'c'
+    elif keys[pg.K_d]:
+        key = 'd'
+    elif keys[pg.K_e]:
+        key = 'e'
+    elif keys[pg.K_f]:
+        key = 'f'
+    elif keys[pg.K_g]:
+        key = 'g'
+    elif keys[pg.K_h]:
+        key = 'h'
+    elif keys[pg.K_i]:
+        key = 'i'
+    elif keys[pg.K_j]:
+        key = 'j'
+    elif keys[pg.K_k]:
+        key = 'k'
+    elif keys[pg.K_l]:
+        key = 'l'
+    elif keys[pg.K_m]:
+        key = 'm'
+    elif keys[pg.K_n]:
+        key = 'n'
+    elif keys[pg.K_o]:
+        key = 'o'
+    elif keys[pg.K_p]:
+        key = 'p'
+    elif keys[pg.K_q]:
+        key = 'q'
+    elif keys[pg.K_r]:
+        key = 'r'
+    elif keys[pg.K_s]:
+        key = 's'
+    elif keys[pg.K_t]:
+        key = 't'
+    elif keys[pg.K_u]:
+        key = 'u'
+    elif keys[pg.K_v]:
+        key = 'v'
+    elif keys[pg.K_w]:
+        key = 'w'
+    elif keys[pg.K_x]:
+        key = 'x'
+    elif keys[pg.K_y]:
+        key = 'y'
+    elif keys[pg.K_z]:
+        key = 'z'
+    elif keys[pg.K_SPACE]:
+        key = ' '
+    elif keys[pg.K_COLON]:
+        key = ','
+    elif keys[pg.K_PERIOD]:
+        key = '.'
+    elif keys[pg.K_MINUS]:
+        key = '-'
+
+    if keys[pg.K_LSHIFT] or keys[pg.K_RSHIFT]:
+        key = key.upper()
+
+    return key
 
 class List:
 
@@ -52,13 +122,14 @@ class List:
         self.vehicle_text = ""
 
         self.accept = pg.Rect((250, 600), (100, 50))
+        self.button_down = False
 
     def new_vehicle(self, root):
         vehicle_name_bg = pg.Surface((500, 50))
         vehicle_name_bg.fill(self.light_grey)
         vehicle_name_surf = pg.Surface((496, 46))
         vehicle_name_surf.fill(self.dark_grey)
-        vehicle_name_bg.blit(vehicle_name_surf, (2, 2))
+
 
         font = pg.font.SysFont("Arial", 15)
         text = font.render(self.vehicle_text, True, self.light_grey)
@@ -66,9 +137,10 @@ class List:
 
         accept_surf = pg.Surface((100, 50))
         accept_surf.fill(self.grey)
-        text = font.render(self.vehicle_text, True, self.light_grey)
+        text = font.render("Accept", True, self.light_grey)
         accept_surf.blit(text, (5, 12))
 
+        vehicle_name_bg.blit(vehicle_name_surf, (2, 2))
 
         self.new_surf_bg.fill(self.light_grey)
         self.new_surf.fill(self.dark_grey)
@@ -77,21 +149,45 @@ class List:
         self.new_surf.blit(vehicle_name_bg, (50, 100))
         self.new_surf.blit(accept_surf, (50, 300))
 
+
         root.blit(self.new_surf_bg, (200, 300))
         root.blit(self.new_surf, (202, 302))
 
         return root
 
+    def new_vehicle_entry(self):
+        n = get_key_pressed()
+        try:
+            if n == False:
+                self.vehicle_text = self.vehicle_text[:-1]
+            else:
+                self.button_down = True
+                self.vehicle_text += n
+        except TypeError:
+            pass
+
+    def new_vehicle_accept(self):
+
+        if self.car:
+            new_car = vehicle.Vehicle(self.vehicle_text, len(self.inventory[0]))
+            self.inventory[0].append(new_car)
+        else:
+            new_car = vehicle.Vehicle(self.vehicle_text, len(self.inventory[1]))
+            self.inventory[1].append(new_car)
+
+            print("")
+
+
     def click(self, pos):
         if self.car:
-            for vehicle in self.inventory[0]:
-                if vehicle.rect.collidepoint(pos):
-                    return vehicle
+            for v in self.inventory[0]:
+                if v.rect.collidepoint(pos):
+                    return v
 
         else:
-            for vehicle in self.inventory[1]:
-                if vehicle.rect.collidepoint(pos):
-                    return vehicle
+            for v in self.inventory[1]:
+                if v.rect.collidepoint(pos):
+                    return v
 
 
     def draw(self, root):
@@ -108,9 +204,9 @@ class List:
             self.car_tab.fill(self.grey)
             self.truck_tab.fill(self.dark_grey)
 
-        for x, vehicle in enumerate(inv):
+        for x, v in enumerate(inv):
             pos = (0, x * 50)
-            self.surf = vehicle.gen_surf(self.surf, pos)
+            self.surf = v.gen_surf(self.surf, pos)
 
         root.blit(self.surf, (self.position[0], self.position[1] - self.scrolled))
 

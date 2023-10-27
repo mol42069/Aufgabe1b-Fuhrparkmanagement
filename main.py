@@ -13,17 +13,16 @@ def main():
     cars = []
     trucks = []
 
-    scrolled = 100
+    scrolled = 0
     mouse_press = False
-
-    for x in range(30):
+    for x in range(19):
         cars.append(vehicle.Vehicle("car", x, screen_size))
         trucks.append(vehicle.Vehicle("Truck", x , screen_size))
 
 
 
-    cars[2].vehicle_type = "Volkswagen Golf-4"
-    cars[2].take((0, 5, 30))
+    cars[0].vehicle_type = "Volkswagen Golf-4"
+    cars[0].take((0, 5, 30))
 
     inv = [cars, trucks]
     v = None
@@ -36,13 +35,19 @@ def main():
     pg.display.init()
     root = pg.display.set_mode(screen_size)
 
-    #TODO: WE NEED TO ADD THE FOLLOWING MAX_SCROLL SHIT TO THE NEW VEHICLE STUFF
-
     if car_list.car:
-        max_scroll = (50 + len(car_list.inventory[0]) * 50) - screen_size[1]
+        if (len(car_list.inventory[0]) * 50) + 50 > screen_size[1]:
+            max_scroll = (len(car_list.inventory[0]) * 50) - screen_size[1] + 50
+
+        else:
+            max_scroll = 0
 
     else:
-        max_scroll = (50 + len(car_list.inventory[1]) * 50) - screen_size[1]
+        if (len(car_list.inventory[1]) * 50) + 50 > screen_size[1]:
+            max_scroll = (len(car_list.inventory[1]) * 50) - screen_size[1] + 50
+
+        else:
+            max_scroll = 0
 
     temp = None
 
@@ -60,7 +65,10 @@ def main():
         elif new_v_window:
             root = car_list.new_vehicle(root)
 
-        if temp is not None:
+        if not new_v_window:
+            car_list.vehicle_text = ''
+
+        if temp is not None and v is None:
             temp.text = ["", "", ""]
 
 
@@ -73,7 +81,7 @@ def main():
 
             if event.type == pg.MOUSEWHEEL:
 
-                scrolled += 20 * event.y
+                scrolled -= 20 * event.y
                 if scrolled < 0:
                     scrolled = 0
                 elif scrolled > max_scroll:
@@ -82,6 +90,23 @@ def main():
             if event.type != pg.KEYDOWN:
                 if v is not None:
                     v.button_down = False
+            else:
+                if new_v_window:
+                    car_list.new_vehicle_entry()
+
+                if v is not None:
+                    if v.chosen == 0:
+                        v.entry(0)
+
+
+                    elif (v.i_box[1].collidepoint(pos) and pg.mouse.get_pressed()[0]) or v.chosen == 1:
+                        v.entry(1)
+                        v.chosen = 1
+
+                    elif (v.i_box[2].collidepoint(pos) and pg.mouse.get_pressed()[0]) or v.chosen == 2:
+                        v.entry(2)
+                        v.chosen = 2
+
 
 
 
@@ -155,26 +180,33 @@ def main():
                 else:
                     v.chosen = 3
 
+            if new_v_window:
+                temp_pos = (pos[0], pos[1])
+                if car_list.accept.collidepoint(temp_pos):
+                    new_v_window = False
+                    car_list.new_vehicle_accept()
+
+                    if car_list.car:
+                        if (len(car_list.inventory[0]) * 50 ) + 50 >  screen_size[1]:
+                            max_scroll = (len(car_list.inventory[0]) * 50) - screen_size[1] + 50
+
+                        else: max_scroll = 0
+
+                    else:
+                        if (len(car_list.inventory[1]) * 50 ) + 50 >  screen_size[1]:
+                            max_scroll = (len(car_list.inventory[1]) * 50) - screen_size[1] + 50
+
+                        else: max_scroll = 0
 
 
             #TODO: IMPLEMENT NEW VEHICLE STUFF
 
-
         else:
             mouse_press = False
 
-        if v is not None:
-            if v.chosen == 0:
-                v.entry(0)
 
 
-            elif (v.i_box[1].collidepoint(pos) and pg.mouse.get_pressed()[0]) or v.chosen == 1:
-                v.entry(1)
-                v.chosen = 1
 
-            elif (v.i_box[2].collidepoint(pos) and pg.mouse.get_pressed()[0]) or v.chosen == 2:
-                v.entry(2)
-                v.chosen = 2
 
 
 

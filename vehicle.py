@@ -4,33 +4,33 @@ import pygame as pg
 
 def get_key_pressed():
     keys = pg.key.get_pressed()
-    if keys[pg.K_0]:
+    if keys[pg.K_BACKSPACE]:
+        return False
+    if keys[pg.K_0] or keys[pg.K_KP0]:
         return '0'
-    elif keys[pg.K_1]:
+    elif keys[pg.K_1] or keys[pg.K_KP1]:
         return '1'
-    elif keys[pg.K_2]:
+    elif keys[pg.K_2] or keys[pg.K_KP2]:
         return '2'
-    elif keys[pg.K_3]:
+    elif keys[pg.K_3] or keys[pg.K_KP3]:
         return '3'
-    elif keys[pg.K_4]:
+    elif keys[pg.K_4] or keys[pg.K_KP4]:
         return '4'
-    elif keys[pg.K_5]:
+    elif keys[pg.K_5] or keys[pg.K_KP5]:
         return '5'
-    elif keys[pg.K_6]:
+    elif keys[pg.K_6] or keys[pg.K_KP6]:
         return '6'
-    elif keys[pg.K_7]:
+    elif keys[pg.K_7] or keys[pg.K_KP7]:
         return '7'
-    elif keys[pg.K_8]:
+    elif keys[pg.K_8] or keys[pg.K_KP8]:
         return '8'
-    elif keys[pg.K_9]:
+    elif keys[pg.K_9] or keys[pg.K_KP9]:
         return '9'
-    elif keys[pg.K_BACKSPACE]:
-        return '-1'
 
 
 class Vehicle:
 
-    def __init__(self, vehicle_type, idx, size):
+    def __init__(self, vehicle_type, idx, size=(1920, 1080)):
         self.size = size
         self.id = idx + 1
         self.vehicle_type = str(vehicle_type)
@@ -176,12 +176,12 @@ class Vehicle:
 
 
     def entry(self, index):
-
+        print(self.text)
         n = get_key_pressed()
         if n == '-1':
             self.text[index] = self.text[index][:-1]
 
-        if not self.button_down:
+        elif not self.button_down:
             self.button_down = True
             if n is None:
                 pass
@@ -192,7 +192,7 @@ class Vehicle:
 
     def gen_surf(self, surface, position):
 
-        font = pg.font.SysFont("Comic Sans MS", 20)
+        font = pg.font.SysFont("Arial", 22)
 
         id_surf = pg.Surface((48, 48))
         type_surf = pg.Surface((449, 48))
