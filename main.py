@@ -107,10 +107,8 @@ def main():
                         v.entry(2)
                         v.chosen = 2
 
-
-
-
-        if pg.mouse.get_pressed()[0]:
+        k = pg.key.get_pressed()
+        if pg.mouse.get_pressed()[0] or k[pg.K_KP_ENTER] or k[pg.K_RETURN]:
             pos = pg.mouse.get_pos()
             temp_pos = (pos[0] - 50, pos[1])
 
