@@ -30,7 +30,7 @@ def get_key_pressed():
 
 class Vehicle:
 
-    def __init__(self, vehicle_type, idx, size=(1920, 1080)):
+    def __init__(self, vehicle_type, idx, size=(1000, 1000)):
         self.size = size
         self.id = idx + 1
         self.vehicle_type = str(vehicle_type)
@@ -56,13 +56,11 @@ class Vehicle:
         self.accept = pg.Rect((50, 300), (100, 50))
         self.accept_s = pg.Surface((100, 50))
 
-    def take(self, duration=(0, 0, 0), return_date=(1, 0, 0, 0, 0, 0)):
+    def take(self, duration=None, return_date=None):
         # duration is (days, hours, minutes)
-        # return_date is (Year, Month, Day, Hour, Minute, Seconds)
+        # return_date is (Day, Month, Year, Hour, Minute, Seconds)
 
-
-
-        if duration != (0, 0, 0):
+        if duration is not None:
 
             self.parked = False
 
@@ -74,16 +72,15 @@ class Vehicle:
             time_change = datetime.timedelta(minutes=duration[2])
             self.expected_back = cur_date + time_change
 
-        #elif return_date != (0, 0, 0, 0, 0):
-        #    self.expected_back = datetime.datetime(return_date[0], return_date[1], return_date[2],
-        #                                           return_date[3], return_date[4], 0)
-
-
+        elif return_date is not None:
+            self.expected_back = datetime.datetime(return_date[2], return_date[1], return_date[0],
+                                                   return_date[3], return_date[4], 0)
+            self.parked = False
         return
 
     def returned(self):
         self.parked = True
-
+        self.expected_back = None
         return
 
     def build_click(self, root):
@@ -176,7 +173,6 @@ class Vehicle:
 
 
     def entry(self, index):
-        print(self.text)
         n = get_key_pressed()
         if n == '-1':
             self.text[index] = self.text[index][:-1]

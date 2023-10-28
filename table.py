@@ -97,10 +97,10 @@ def get_key_pressed():
 
 class List:
 
-    def __init__(self, inventory, starting_pos=50):
+    def __init__(self, starting_pos=50):
         self.position = (50, starting_pos)
-        self.inventory = inventory
-        self.surf = pg.Surface((900, len(inventory[0]) * 50))
+        self.inventory = [[],[]]
+        self.surf = pg.Surface((900, len(self.inventory[0]) * 50))
         self.new_tab = pg.Surface((98, 48))
         self.new_rect = pg.Rect((1, 1),(98, 48))
         self.car_tab = pg.Surface((399, 48))
@@ -174,9 +174,6 @@ class List:
         else:
             new_car = vehicle.Vehicle(self.vehicle_text, len(self.inventory[1]))
             self.inventory[1].append(new_car)
-
-            print("")
-
 
     def click(self, pos):
         if self.car:

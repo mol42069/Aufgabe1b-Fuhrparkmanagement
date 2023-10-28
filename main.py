@@ -1,3 +1,6 @@
+import datetime
+
+import save
 import vehicle
 import table
 import pygame as pg
@@ -10,26 +13,17 @@ screen_size = (1000, 1000)
 
 def main():
     global running, screen_size
-    cars = []
-    trucks = []
 
     scrolled = 0
     mouse_press = False
-    for x in range(19):
-        cars.append(vehicle.Vehicle("car", x, screen_size))
-        trucks.append(vehicle.Vehicle("Truck", x , screen_size))
-
-
-
-    cars[0].vehicle_type = "Volkswagen Golf-4"
-    cars[0].take((0, 5, 30))
-
-    inv = [cars, trucks]
     v = None
 
     new_v_window = False
 
-    car_list = table.List(inv)
+    car_list = table.List()
+
+    ls = distribute_data(save.load())
+    car_list.inventory = ls
 
     pg.init()
     pg.display.init()
@@ -77,7 +71,8 @@ def main():
 
             if event.type == pg.QUIT:
                 running = False
-                exit()
+                return car_list
+
 
             if event.type == pg.MOUSEWHEEL:
 
@@ -203,10 +198,70 @@ def main():
             mouse_press = False
 
 
+def data_collection(car_list):
+    data = [[['']],[[],[]]]               #FORMAT: [[[USER]],[[CARS], [TRUCKS]]]
+
+    car_data = []
+    for car in car_list.inventory[0]:
+        if car.expected_back is None:
+            back = 0
+        else:
+            back = car.expected_back.strftime('%d/%m/%y, %H:%M:%S')
+
+        car_data.append([car.id - 1, car.vehicle_type, back])
+
+    data[1][0] = car_data
+
+    truck_data = []
+    for truck in car_list.inventory[1]:
+        if truck.expected_back is None:
+            back = 0
+        else:
+            back = truck.expected_back.strftime('%d/%m/%y, %H:%M:%S')
+        truck_data.append([truck.id - 1, truck.vehicle_type, back])
+
+    data[1][1] = truck_data
+
+#TODO: HERE WE NEED TO ADD USER DATA...
 
 
+    return data
+
+def distribute_data(load_data):
+    global screen_size
+    car_list = [[],[]]
+
+    for car_data in load_data[1][0]:
+        idx = int(car_data[0])
+        vehicle_type = car_data[1]
+        expected_back = car_data[2]
+        car = vehicle.Vehicle(vehicle_type, idx, screen_size)
+
+        if expected_back != '0':
+            date = datetime.datetime.strptime(expected_back, '%d/%m/%y, %H:%M:%S')
+            return_date = (date.day, date.month, date.year, date.hour, date.minute, date.second)
+            car.take(return_date=return_date)
+
+        car_list[0].append(car)
 
 
+    for truck_data in load_data[1][1]:
+        idx = int(truck_data[0])
+        vehicle_type = truck_data[1]
+        expected_back = truck_data[2]
+        truck = vehicle.Vehicle(vehicle_type, idx, screen_size)
+
+        if expected_back != '0':
+            date = datetime.datetime.strptime(expected_back, '%d/%m/%y, %H:%M:%S')
+            return_date = (date.day, date.month, date.year, date.hour, date.minute, date.second)
+            truck.take(return_date=return_date)
+
+        car_list[1].append(truck)
+
+
+    return car_list
+
+#TODO: HERE WE NEED TO ADD USER DATA:
 
 def key_pressed():
     return
@@ -214,4 +269,4 @@ def key_pressed():
 
 
 if __name__ == "__main__":
-    main()
+    save.save(data_collection(main()))
